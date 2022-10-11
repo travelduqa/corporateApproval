@@ -8,21 +8,28 @@ $(document).on('click', '.book_this_request_btn', function(e){
 
 
 
-// confirm approval and cancel
-$(document).on('click', '.approve_request_btn,.cancel_request_btn', function(e){
+// confirm approval, re-send and cancel
+$(document).on('click', '.approve_request_btn,.cancel_request_btn,.resend_request_btn', function(e){
     e.preventDefault();
     if($(this).hasClass('approve_request_btn')){
         $('#approve_cancel_modal .modal-title').html('<em class="icon ni ni-info"></em>&nbsp;Approve Request');
         $('#approve_cancel_modal .confirmation__message').html('You are about to approve the travel request selected, allowing the user who requested it to book a flight');
         $('#approve_cancel_modal .action__btn').prop('id',  $(this).prop('id'));
-        $('#approve_cancel_modal .action__btn').removeClass('confirm_cancel_btn').addClass('confirm_approval_btn').html('<em class="icon ni ni-check"></em><span>Approve Now</span> ');
+        $('#approve_cancel_modal .action__btn').removeClass('confirm_cancel_btn confirm_resend_btn').addClass('confirm_approval_btn').html('<em class="icon ni ni-check"></em><span>Approve Now</span> ');
         $('#approve_cancel_modal').modal('show');
 
     }else  if($(this).hasClass('cancel_request_btn')){
         $('#approve_cancel_modal .modal-title').html('<em class="icon ni ni-info"></em>&nbsp;Cancel Request');
         $('#approve_cancel_modal .confirmation__message').html('You are about to cancel the travel request selected, preventing the user who requested it from booking a flight');
         $('#approve_cancel_modal .action__btn').prop('id', $(this).prop('id'));
-        $('#approve_cancel_modal .action__btn').removeClass('confirm_approval_btn').addClass('confirm_cancel_btn').html('<em class="icon ni ni-cross-circle"></em><span>Cancel Now</span> ');
+        $('#approve_cancel_modal .action__btn').removeClass('confirm_approval_btn confirm_resend_btn').addClass('confirm_cancel_btn').html('<em class="icon ni ni-cross-circle"></em><span>Cancel Now</span> ');
+        $('#approve_cancel_modal').modal('show');
+
+    }else  if($(this).hasClass('resend_request_btn')){
+        $('#approve_cancel_modal .modal-title').html('<em class="icon ni ni-info"></em>&nbsp;Re-send Request');
+        $('#approve_cancel_modal .confirmation__message').html('You are about to re-send the request to your Corporate administrators');
+        $('#approve_cancel_modal .action__btn').prop('id', $(this).prop('id'));
+        $('#approve_cancel_modal .action__btn').removeClass('confirm_approval_btn confirm_cancel_btn').addClass('confirm_resend_btn').html('<em class="icon ni ni-send"></em><span>Send Now</span> ');
         $('#approve_cancel_modal').modal('show');
 
     }
