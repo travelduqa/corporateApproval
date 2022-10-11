@@ -1,25 +1,6 @@
 <?php
-
-//THE FUNCTIONS ARE DYNAMIC TO CATER FOR DIFFERENT REQUEST STATUS'
-    //CORPORATE TRAVEL REQUESTS
-    public function corporate_travel_requests($status=''){
-       if(!isLoggedIn()){
-           redirect('auth/corporate_login');
-       }
-        $meta = [
-            'page_title' => 'Travel Requests',
-            'description' => 'Travel Requests'
-        ];
-        $data['requests_status']= $status;
-        $data['modal']= 'none';
-        if($status=='pending'){$status='awaiting approval';}
-        $data['pending_requests_no'] = $this->admin_model->get_data_where_count_sql("SELECT * FROM tbl_corporate_travel_requests WHERE status='$status' AND user_id=35");
-
-        $this->page_construct_admin('corporate/travel_requests_list', $meta, $data);
-    }
-
-//DATATABLES
-    public function getCorpTravelRequests($status='awaiting approval'){
+//FIXED DATATABELS SEARCH AND ADDED FUNCTIONALITY TO APPROVE AND CANCEL BUTTONS
+  public function getCorpTravelRequests($status='awaiting approval'){
         $draw = $_POST['draw'];
         $row = $_POST['start'];
         $rowperpage = $_POST['length']; // Rows display per page
@@ -32,10 +13,10 @@
         $totalRecords = $this->admin_model->get_data_count('tbl_corporate_travel_requests', $array_column);
 
         $sql = '';
-      //I USED A STATIC USER_ID VALUE. CHANGE TO CURRENT LOGGED IN
+	  //FIXED SEARCH
         $sql = "SELECT * FROM tbl_corporate_travel_requests WHERE status='$status' AND user_id=35";
         if ($searchValue != '') {
-            $sql .= " AND (travel_details LIKE '%$searchValue%' OR names LIKE '%$searchValue%' OR email LIKE '%$searchValue%' OR status LIKE '%$searchValue%' ) ";
+            $sql .= " AND (travel_details LIKE '%$searchValue%' OR user_details LIKE '%$searchValue%' ) ";
         }
         $totalRecordwithFilter = $this->admin_model->get_data_where_count_sql($sql);
 
@@ -43,15 +24,16 @@
         if ($rowperpage == -1) {
             $rowperpage = $totalRecords;
         }
-
         $sql .= "  ORDER BY created_at DESC LIMIT $row , $rowperpage ";
-
 
         $datas = $this->admin_model->get_data_sql_all($sql);
         $i = 1;
         $ar = array();
         if ($datas) {
             foreach ($datas as $rec) {
+
+
+
                 $user = '<div class="user space-y-2">
 	                                <span class="block"><em class="icon ni ni-user "></em>&nbsp; ' . json_decode($rec['user_details'])->names . '</span>
                                     <span class="block"><em class="icon ni ni-call"></em>&nbsp;  ' . json_decode($rec['user_details'])->phone . '</span>
@@ -80,10 +62,13 @@
                 }
                 if ($rec['status'] == 'awaiting approval') {
                     $status = '<span class="badge badge-sm badge-dot has-bg badge-warning   d-none d-mb-inline-flex">'.ucfirst($rec['status']).'</span>';
+			
+			//CHANGED ACTION BUTTONS HERE
                     $action =
                         '
                         <div class="text-center" role="group" aria-label="Button group">
-                            <button class="btn btn-sm btn-success resubmit_request_btn" id="' . $rec['id'] . '"><em class="icon ni ni-send-alt"></em>&nbsp;Re-Submit Request</button>
+                            <button class="btn btn-sm btn-primary resend_request_btn" id="' . $rec['id'] . '"><em class="icon ni ni-send-alt"></em>&nbsp;Re-send Request</button>
+                            <button class="btn btn-sm btn-success approve_request_btn" id="' . $rec['id'] . '"><em class="icon ni ni-check"></em>&nbsp;Approve</button>
                             <button class="btn btn-sm btn-danger cancel_request_btn" id="' . $rec['id'] . '"><em class="icon ni ni-cross-circle"></em>&nbsp;Cancel</button>
                          </div>                                
                         ';
