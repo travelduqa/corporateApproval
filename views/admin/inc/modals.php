@@ -1,5 +1,5 @@
 
-<!--request approval/cancellation confirmation Modal-->
+<!--request approval/cancellation/resend confirmation Modal-->
 <div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" id="approve_cancel_modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
